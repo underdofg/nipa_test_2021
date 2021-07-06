@@ -43,7 +43,7 @@
 ## 2. API Update Ticket 
  **Path: '/update-ticket' using POST method.**
 
- ### This api receive ticket information to update ticket column. To update ticket info send JSON boy that hvae attributes such as *"ticketStatus" , "ticketTitle" , "ticketDescription" , "ticketContactInfo"* by sending JSON into body.
+#### This api receive ticket information to update ticket column. To update ticket info send JSON boy that hvae attributes such as *"ticketStatus" , "ticketTitle" , "ticketDescription" , "ticketContactInfo"* by sending JSON into body.
 
 1. To update ticket info by using this api it's required "ticketId" . It will receive from "/create-ticket " as primary key of ticket table. If there's no "ticketId" this api will response error "Invalid Mandatory"  
 
@@ -73,6 +73,6 @@
 ## 3. API Get list and sort tickets 
  **Path: '/get-ticket-all' using POST method.**
 
-### This api freestyle to 
+** This api freestyle to **
 
 <span style="background-color:black" >some *blue* text</span>.

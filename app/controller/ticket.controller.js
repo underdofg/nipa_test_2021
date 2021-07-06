@@ -19,7 +19,7 @@ exports.creatTicket = async (req, res, next) => {
         ticketId: result.rows[0].ticket_id,
       });
     } else {
-      throw new ValidateError("กรุณาลองใหม่", 500, ticketDetail.ticket_title);
+      throw new ValidateError("can not create ticket", 500, ticketDetail.ticket_title);
     }
     await client.query("COMMIT");
   } catch (error) {

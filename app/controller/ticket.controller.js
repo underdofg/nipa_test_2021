@@ -4,9 +4,8 @@ const TicketCreator = require( "../model/createTicket")
 const UpdateTicket = require("../model/updateTicket")
 
 exports.creatTicket = async (req, res, next) => {
-  const client = await db.connect();
-  
   try {
+    const client = await db.connect();
     const ticketDetail = new TicketCreator(req.body);
     const ticketSqL = insertSQL(ticketDetail, "ticket");
     ticketSqL.sql += "RETURNING ticket_id";
@@ -20,50 +19,50 @@ exports.creatTicket = async (req, res, next) => {
     } else {
       throw new ValidateError("กรุณาลองใหม่", 500, ticketDetail.ticket_title);
     }
-  
   } catch (error) {
     next(error);
   }
 };
 
 exports.updateTicketStatus = async (req, res, next) => {
-  const client = await db.connect();
-
   try {
-    let result 
-    if(req.body.status) {
-      const statusId = await getTicketStatusId(req.body.status);
+    const client = await db.connect();
+    let result;
+    if (req.body.ticketStatus) {
+      const statusId = await getTicketStatusId(req.body.ticketStatus ,res);
+      if(statusId == null) throw new ValidateError("This ticket status not exist", 400, {
+        ticketStatus: req.body.ticketStatus,
+      });
       req.body.status = statusId;
-      const updateTicketDetail = new UpdateTicket(req.body);
-      const updateSqL = updateSql(req.body.ticketId, updateTicketDetail);
-      result = await client.query(updateSqL.query, updateSqL.params);
+    }
+    const updateTicketDetail = new UpdateTicket(req.body);
+    const updateSqL = updateSql(req.body.ticketId, updateTicketDetail);
+    result = await client.query(updateSqL.query, updateSqL.params);
+
+    if (result && result.rowCount === 1) {
+      res.json({
+        status: 200,
+        message: "Update success",
+        informationUpdated: req.body,
+      });
 
     } else {
-      const updateTicketDetail = new UpdateTicket(req.body);
-      const updateSqL = updateSql(req.body.ticketId, updateTicketDetail);
-      result = await client.query(updateSqL.query, updateSqL.params)
+      throw new ValidateError("Not have ticketId", 500, {
+        ticketId: req.body.ticketId,
+        ticketTitle: req.body.ticketTitle
+      });
     }
-
-    if(result && result.rowCount === 1) {
-        res.json({
-          status: 200,
-        });
-    } else {
-       throw new ValidateError("กรุณาลองใหม่", 500, ticketDetail.ticket_title);
-    }
-
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
 
 
 exports.getTicket = async (req, res, next) => {
-  const client = await db.connect();
   const { ticketStatus , sortByLastUpdate , sortBySatus} = req.body
 
   try {
-    
+    const client = await db.connect();
     let sql = `
     select
 		  t.ticket_id ,
@@ -89,11 +88,9 @@ exports.getTicket = async (req, res, next) => {
 
     return res.json({
       success: 200,
-      data: result.rows,
+      ticketlist: result.rows,
     });
   } catch (error) {
-    console.log(error);
-    // throw new ValidateError('กรุณาลองใหม่', 500)
     next(error);
   }
 };
@@ -145,11 +142,16 @@ const updateSql =  (id, columns) => {
 };
 
 
-const getTicketStatusId = async (statusname) => {
-    const resultId = await client.query(
+const getTicketStatusId = async (statusname ) => {
+   const client = await db.connect();
+   const resultId = await client.query(
       "SELECT ticket_status_id FROM ticket_status WHERE ticket_status = $1",
       [statusname]
     );
-    const statusId = resultId.rows[0].ticket_status_id;
-    return statusId;
+    if(resultId.rows.length !== 0) {
+      return resultId.rows[0].ticket_status_id;
+    } else {
+      return null
+    }
+
 }

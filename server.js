@@ -19,14 +19,6 @@ app.use(function (req ,res, next){
     next()
 })
 
-app.use((req, res, next) => {
-  console.log(`Request URL`, {
-    header: req.headers,
-    method: req.method
-  });
-  next();
-});
-
 require("./app/route/ticket.route")(app);
 
 app.use((error, req, res, next) => {

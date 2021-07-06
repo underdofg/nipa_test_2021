@@ -2,12 +2,14 @@ const express = require("express")
 var app = express()
 const ResponseErrors = require("./app/statusResponse/ResponseError");
 const ErrorMessage = require("./app/statusResponse/error.message");
+const checkMandatory = require("./app/middleware/checkMandatory")
 
 const bodyParser = require("body-parser");
 
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
 
 
 app.use(function (req ,res, next){
@@ -18,6 +20,7 @@ app.use(function (req ,res, next){
     res.setHeader('Access-Control-Expose-Headers', 'x-suggested-filename')
     next()
 })
+app.use(checkMandatory);
 
 require("./app/route/ticket.route")(app);
 
@@ -27,7 +30,7 @@ app.use((error, req, res, next) => {
 });
 
 
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
   if (req.method != "OPTIONS") {
     res.status(404).send({ error: ErrorMessage.error404 });
   } else {

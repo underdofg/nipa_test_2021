@@ -4,11 +4,13 @@ const TicketCreator = require( "../model/createTicket")
 const UpdateTicket = require("../model/updateTicket")
 
 exports.creatTicket = async (req, res, next) => {
+   const client = await db.connect();
   try {
-    const client = await db.connect();
     const ticketDetail = new TicketCreator(req.body);
     const ticketSqL = insertSQL(ticketDetail, "ticket");
     ticketSqL.sql += "RETURNING ticket_id";
+
+    await client.query("BEGIN");
     const result = await client.query(ticketSqL.sql, ticketSqL.params);
     if(result.rowCount === 1) {
       res.json({
@@ -19,14 +21,16 @@ exports.creatTicket = async (req, res, next) => {
     } else {
       throw new ValidateError("กรุณาลองใหม่", 500, ticketDetail.ticket_title);
     }
+    await client.query("COMMIT");
   } catch (error) {
+    await client.query("ROLLBACK");
     next(error);
   }
 };
 
 exports.updateTicketStatus = async (req, res, next) => {
+   const client = await db.connect();
   try {
-    const client = await db.connect();
     let result;
     if (req.body.ticketStatus) {
       const statusId = await getTicketStatusId(req.body.ticketStatus ,res);
@@ -36,6 +40,7 @@ exports.updateTicketStatus = async (req, res, next) => {
       req.body.status = statusId;
     }
     const updateTicketDetail = new UpdateTicket(req.body);
+    await client.query("BEGIN");
     const updateSqL = updateSql(req.body.ticketId, updateTicketDetail);
     result = await client.query(updateSqL.query, updateSqL.params);
 
@@ -52,7 +57,9 @@ exports.updateTicketStatus = async (req, res, next) => {
         ticketTitle: req.body.ticketTitle
       });
     }
+    await client.query("COMMIT");
   } catch (error) {
+    await client.query("ROLLBACK");
     next(error);
   }
 };

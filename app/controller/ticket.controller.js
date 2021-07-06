@@ -14,7 +14,7 @@ exports.creatTicket = async (req, res, next) => {
     const result = await client.query(ticketSqL.sql, ticketSqL.params);
     if(result.rowCount === 1) {
       res.json({
-        status: 200,
+        status: 'success',
         ticketTitle: ticketDetail.ticket_title,
         ticketId: result.rows[0].ticket_id,
       });
@@ -34,7 +34,7 @@ exports.updateTicketStatus = async (req, res, next) => {
     let result;
     if (req.body.ticketStatus) {
       const statusId = await getTicketStatusId(req.body.ticketStatus ,res);
-      if(statusId == null) throw new ValidateError("This ticket status not exist", 400, {
+      if(statusId == null) throw new ValidateError("This ticket status does not exist", 400, {
         ticketStatus: req.body.ticketStatus,
       });
       req.body.status = statusId;

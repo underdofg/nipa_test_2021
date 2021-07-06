@@ -1,9 +1,8 @@
 # API specification
 This application running on port 3004
-### 1.  API. create ticket
+### 1.  API create ticket
  Path: '/create-ticket' using post method.
- 1. This api wiill recieve object into body examle :
-            
+ #### This api only reciece JSON body and it's required ticketTitle, ticketDescription , ticketContactInfo examle :
          
             {
                 "ticketTitle" : "exampleTicket",
@@ -11,7 +10,7 @@ This application running on port 3004
                 "ticketContactInfo" : "exampleContanctInfo"   
             }
 
- 2. if success it will return ticketTitle , ticketId example :
+ 1. if success it will return ticketTitle , ticketId example :
 
             {
                 "status" : 200,

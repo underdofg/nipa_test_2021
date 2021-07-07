@@ -27,7 +27,7 @@
                 "ticketId" : 1   
             }
 
-    if error sever will send error and error message. example -
+    if error sever will send error message. example -
 
             {
                 "status"  : "not success",
@@ -40,14 +40,23 @@
                "error": "Invalid Mandatory"
             }
 
-## 2. API Update Ticket 
+## 2.  API Update Ticket 
  **Path: '/update-ticket' using POST method.**
 
-#### This api receive ticket information to update ticket column. To update ticket info send JSON boy that hvae attributes such as *"ticketStatus" , "ticketTitle" , "ticketDescription" , "ticketContactInfo"* by sending JSON into body.
+#### This api receives ticket information to update ticket column. To update ticket info send JSON boy that has attributes such as *"ticketStatus" , "ticketTitle" , "ticketDescription" , "ticketContactInfo"* .
 
-1. To update ticket info by using this api it's required "ticketId" . It will receive from "/create-ticket " as primary key of ticket table. If there's no "ticketId" this api will response error "Invalid Mandatory"  
+1. To update ticket info by using this api it's required "ticketId" . It will receive from "/create-ticket " as primary key of ticket table. If there's no "ticketId" this api will response error "Invalid Mandatory"  example -
 
-2. If update ticket status makes sure that status strings are correct. There's only 4 types of status  - 1.pending , 2.accepted , 3. resolved , 4.rejected. If sending wrong status api will response error and the updating is not success example - 
+        {
+            "ticketId" : 4,
+            "ticketStatus" : "resolved",
+            "ticketTitle" : "example",
+            "ticketDescription" : "exampleDescripton2",
+            "ticketContactInfo" : "ticketContactInfo3"
+        }
+
+
+2. If updates ticket status makes sure that status strings are correct. There's only 4 types of status  - 1.pending , 2.accepted , 3. resolved , 4.rejected. If sending wrong status api will response error and the updating is not success example - 
 
     Sending 
 
@@ -66,13 +75,17 @@
             "status": "not success",
             "message": "This ticket status not exist",
             "data": {
-                "ticketStatus": "doo"
+                "ticketStatus": "foo"
             }
         }
 
 ## 3. API Get list and sort tickets 
  **Path: '/get-ticket-all' using POST method.**
 
-** This api freestyle to **
+#### To be able to sort tickets this api accept 3 parameter *1. "ticketStatus" , "sortByLastUpdate" , "sortBySatus"* , each of sort parameter's required value = *true* example -
 
-<span style="background-color:black" >some *blue* text</span>.
+    {
+          "ticketStatus" : "accepted",
+          "sortByLastUpdate" : true,
+          "sortBySatus" : true
+    }

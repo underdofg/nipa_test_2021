@@ -30,25 +30,30 @@ exports.creatTicket = async (req, res, next) => {
 
 exports.updateTicketStatus = async (req, res, next) => {
    const client = await db.connect();
+   let data = req.body;
   try {
     let result;
     if (req.body.ticketStatus) {
-      const statusId = await getTicketStatusId(req.body.ticketStatus ,res);
+      const statusId = await getTicketStatusId(data.ticketStatus ,res);
       if(statusId == null) throw new ValidateError("This ticket status does not exist", 400, {
         ticketStatus: req.body.ticketStatus,
       });
-      req.body.status = statusId;
+
+      data.status = statusId;
     }
     const updateTicketDetail = new UpdateTicket(req.body);
     await client.query("BEGIN");
     const updateSqL = updateSql(req.body.ticketId, updateTicketDetail);
     result = await client.query(updateSqL.query, updateSqL.params);
+    
+
 
     if (result && result.rowCount === 1) {
-      res.json({
+       delete data.status
+       res.json({
         status: 200,
         message: "Update success",
-        informationUpdated: req.body,
+        informationUpdated: data,
       });
 
     } else {
@@ -72,13 +77,13 @@ exports.getTicket = async (req, res, next) => {
     const client = await db.connect();
     let sql = `
     select
-		  t.ticket_id ,
-	    ticket_title,
-	    ticket_description ,
-	    ticket_contact_information ,
-	    ts.ticket_status,
-	    t.ticket_timestamp,
-	    t.ticket_update_at
+		  t.ticket_id as ticketId,
+	    ticket_title as ticketTitle,
+	    ticket_description as ticketDescription,
+	    ticket_contact_information as ticketContactInfo,
+	    ts.ticket_status as ticketStatus,
+	    to_char(t.ticket_timestamp ,'DD MM YYYY HH12:MI:SS') as ticketTimeStamp,
+	    to_char(t.ticket_update_at , 'DD MM YYYY HH12:MI:SS') as ticketUpdateAt
     from
 	    ticket t
     left join ticket_status ts on t.ticket_status = ts.ticket_status_id
@@ -86,9 +91,10 @@ exports.getTicket = async (req, res, next) => {
 	    1 = 1
 	  ${ticketStatus ? "and ts.ticket_status like $1 " : ""} 
     ${sortByLastUpdate || sortBySatus ? "ORDER BY" : ""}
-    ${sortByLastUpdate ? "ticket_update_at " : ""}
-    ${sortBySatus ? ", ticket_status " : ""}`;
-    
+    ${sortBySatus ? " t.ticket_status " : ""}
+    ${sortByLastUpdate ? ", ticket_update_at" : ""} 
+    desc`;
+ 
     let params = []
     params = ticketStatus ? params.concat(ticketStatus) : params ;
     const result = await client.query(sql, params);

@@ -45,7 +45,7 @@
 
 #### This api receives ticket information to update ticket column. To update ticket info send JSON boy that has attributes such as *"ticketStatus" , "ticketTitle" , "ticketDescription" , "ticketContactInfo"* .
 
-1. To update ticket info by using this api it's required "ticketId" . It will receive from "/create-ticket " as primary key of ticket table. If there's no "ticketId" this api will response error "Invalid Mandatory"  example -
+1. To update ticket info by using this api it's required "ticketId" . It will receive from "/create-ticket " as primary key of ticket table. If there's no "ticketId" this api will response error "Invalid Mandatory"  example :
 
         {
             "ticketId" : 4,
@@ -56,9 +56,9 @@
         }
 
 
-2. If updates ticket status makes sure that status strings are correct. There's only 4 types of status  - 1.pending , 2.accepted , 3. resolved , 4.rejected. If sending wrong status api will response error and the updating is not success example - 
+2. If updates ticket status makes sure that status strings are correct. There's only 4 types of status  - 1.pending , 2.accepted , 3. resolved , 4.rejected. If sending wrong status api will response error and the updating is not success example :
 
-    Sending 
+    Sending :
 
         {
             "ticketId" : 4,
@@ -68,7 +68,7 @@
             "ticketContactInfo" : "ticketContactInfo3"
         }
             
-    Return 
+    Return :
 
 
         {
@@ -82,7 +82,7 @@
 ## 3. API Get list and sort tickets 
  **Path: '/get-ticket-all' using POST method.**
 
-#### To be able to sort tickets this api accept 3 parameter *1. "ticketStatus" , "sortByLastUpdate" , "sortBySatus"* , each of sort parameter's required value = *true* example -
+#### To be able to sort tickets this api accept 3 parameters *"ticketStatus" , "sortByLastUpdate" , "sortBySatus"* , each of sort parameter's required value = *true* example :
 
     {
           "ticketStatus" : "accepted",
